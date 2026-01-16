@@ -1,32 +1,41 @@
-use sqlx::postgres::PgPoolOptions;
-use dotenv::dotenv;
+mod db;
+mod models;
+mod services;
+
 use tokio;
 
 #[tokio::main]
 async fn main() {
-    dotenv().ok();
-    
-    let database_url = std::env::var("DATABASE_URL").expect("DATABASE_URL must be set");
-    let _pool = PgPoolOptions::new()
-        .max_connections(5)
-        .connect(&database_url)
-        .await
-        .expect("Failed to connect to database");
-    let result = add(2, 3).await;
+    // Establish database connection pool
+    let pool = match db::create_pool().await {
+        Ok(pool) => {
+            println!("Database connection established successfully.");
+            pool
+        }
+        Err(e) => {
+            eprintln!("Failed to connect to database: {}", e);
+            return;
+        }
+    };
 
-    testing_async_function().await;
-    println!("Result: {}", result);
-    
-}
+    // Perform a health check
+    if db::health_check(&pool).await {
+        println!("Database health check passed.");
+    } else {
+        eprintln!("Database health check failed.");
+        return;
+    }
 
-async fn testing_async_function() {
-    // Simulate some async work
-    tokio::time::sleep(tokio::time::Duration::from_secs(5)).await;
-    println!("Async function completed");
-}
-
-
-
-async fn add(a: i32, b: i32) -> i32 {
-    a + b
+    // Example: Fetch all users (assuming the table exists)
+    match services::UserService::get_all_users(&pool).await {
+        Ok(users) => {
+            println!("Found {} users.", users.len());
+            for user in users {
+                println!("- {} {} (ID: {})", user.first_name, user.last_name, user.public_id);
+            }
+        }
+        Err(e) => {
+            eprintln!("Failed to fetch users: {}", e);
+        }
+    }
 }
