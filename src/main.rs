@@ -6,7 +6,7 @@ use tokio;
 
 #[tokio::main]
 async fn main() {
-    // Establish database connection pool
+    // Establish database connection pool˚†
     let pool = match db::create_pool().await {
         Ok(pool) => {
             println!("Database connection established successfully.");
