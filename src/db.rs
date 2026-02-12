@@ -1,4 +1,4 @@
-    use sqlx::postgres::PgPoolOptions;
+use sqlx::postgres::PgPoolOptions;
 use sqlx::PgPool;
 use dotenv::dotenv;
 use std::env;
