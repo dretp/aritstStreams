@@ -9,6 +9,10 @@ sqlx = { version = "0.8.6", features = ["runtime-tokio", "tls-native-tls", "post
 tokio = { version = "1.47.1", features = ["full"] }
 serde = { version = "1.0", features = ["derive"] }
 chrono = { version = "0.4", features = ["serde"] }
-uuid = { version = "1.0", features = ["v4"] }
-ffmpeg-next = { version = "6", features = ["build"] }
-
+uuid = { version = "1.0", features = ["v4", "serde"] }
+gstreamer = "0.22"
+gstreamer-video = "0.22"
+anyhow = "1.0.101"
+axum = "0.8.8"
+routes = "0.1.0"
+hyper = "0.14"

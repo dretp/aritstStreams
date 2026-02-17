@@ -1,12 +1,22 @@
 mod db;
 mod models;
+
+mod video_test;
+mod route;
+mod controllers;
+
 mod services;
 
+
+use axum::Router;
 use tokio;
 
 #[tokio::main]
 async fn main() {
-    // Establish database connection pool˚†
+    // Optional test pipeline
+    video_test::start().await;
+
+    // DB
     let pool = match db::create_pool().await {
         Ok(pool) => {
             println!("Database connection established successfully.");
@@ -18,24 +28,19 @@ async fn main() {
         }
     };
 
-    // Perform a health check
-    if db::health_check(&pool).await {
-        println!("Database health check passed.");
-    } else {
+    if !db::health_check(&pool).await {
         eprintln!("Database health check failed.");
         return;
     }
 
-    // Example: Fetch all users (assuming the table exists)
-    match services::UserService::get_all_users(&pool).await {
-        Ok(users) => {
-            println!("Found {} users.", users.len());
-            for user in users {
-                println!("- {} {} (ID: {})", user.first_name, user.last_name, user.public_id);
-            }
-        }
-        Err(e) => {
-            eprintln!("Failed to fetch users: {}", e);
-        }
-    }
+    println!("Database health check passed.");
+
+    // Build router
+    let app: Router = route::routes();
+
+    // Start server
+    let addr = "0.0.0.0:3000";
+    println!("🚀 Server running on http://{}", addr);
+
+
 }
