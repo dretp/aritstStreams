@@ -14,7 +14,7 @@ use tokio;
 #[tokio::main]
 async fn main() {
     // Optional test pipeline
-    video_test::start().await;
+    // video_test::start().await;
 
     // DB
     let pool = match db::create_pool().await {
@@ -36,11 +36,18 @@ async fn main() {
     println!("Database health check passed.");
 
     // Build router
+    println!("BUILDING ROUTER");
     let app: Router = route::routes();
 
-    // Start server
-    let addr = "0.0.0.0:3000";
-    println!("🚀 Server running on http://{}", addr);
+    println!("BINDING PORT 4000");
+    let listener = tokio::net::TcpListener::bind("0.0.0.0:4000")
+        .await
+        .expect("bind failed");
+
+    println!("🚀 SERVING HTTP");
+    axum::serve(listener, app)
+        .await
+        .unwrap()
 
 
 }
