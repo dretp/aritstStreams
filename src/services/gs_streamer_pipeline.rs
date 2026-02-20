@@ -24,6 +24,8 @@ impl GStreamerPipelineService {
             }
         };
 
+
+        //pipeline decode the video file
         let pipeline_str = format!(
             "{src} !
              decodebin !

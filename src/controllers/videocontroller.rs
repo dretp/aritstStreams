@@ -11,6 +11,8 @@ pub struct TestRequest {
     pub output_dir: String,
 }
 
+// TODO: have to where we can possibly do multiform data
+
 pub async fn test_pipeline(
     Json(req): Json<TestRequest>,
 ) -> Json<VideoJob> {
